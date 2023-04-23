@@ -3,6 +3,7 @@ class Patient:
         self.__first_name = patient['first_name']
         self.__middle_name = patient['middle_name']
         self.__last_name = patient['last_name']
+        self.__gender = patient['gender']
         self.__address = patient['address']
         self.__city = patient['city']
         self.__state = patient['state']
@@ -10,6 +11,8 @@ class Patient:
         self.__phone_number = patient['phone_number']
         self.__emergency_contact_name = patient['emergency_contact_name']
         self.__emergency_contact_number = patient['emergency_contact_number']
+        self.__medical_history = []
+        self.__test_results = []
 
     def get_first_name(self):
         return self.__first_name
@@ -41,6 +44,9 @@ class Patient:
     def get_emergency_contact_number(self):
         return self.__emergency_contact_number
 
+    def get_gender(self):
+        return self.__gender
+
     def set_first_name(self, first_name):
         self.__first_name = first_name
 
@@ -70,6 +76,9 @@ class Patient:
 
     def set_emergency_contact_number(self, emergency_contact_number):
         self.__emergency_contact_number = emergency_contact_number
+
+    def set_gender(self, gender):
+        self.__gender = gender
 
     def __str__(self):
         return 'Patient: ' + self.__first_name + ' ' + self.__middle_name + ' ' + self.__last_name + \

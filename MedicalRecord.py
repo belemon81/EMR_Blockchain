@@ -4,6 +4,8 @@ class MedicalRecord:
         self.__hospital = medical_record['hospital']
         self.__date = medical_record['date']
         self.__diagnosis = medical_record['diagnosis']
+        self.__medications = medical_record['medications']
+        self.__treatments = medical_record['treatments']
 
         def get_patient(self):
             return self.__patient

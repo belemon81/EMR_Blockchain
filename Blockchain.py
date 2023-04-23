@@ -43,7 +43,6 @@ class Blockchain:
             if (current_hash[0:4] == '0000'):
                 success = True
             else:
-                # try next number
                 block['proof'] += 1
 
     @property

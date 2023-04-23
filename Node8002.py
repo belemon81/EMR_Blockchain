@@ -1,4 +1,4 @@
-from node import Node
+from Node import Node
 from flask import Flask
 
 app = Flask(__name__)
