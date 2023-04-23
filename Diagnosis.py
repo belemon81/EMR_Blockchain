@@ -1,8 +1,8 @@
 class Diagnosis:
-    def __init__(self, date, doctor, sickness, code, description, treatment):
-        self.__date = date
-        self.__doctor = doctor
-        self.__sickness = sickness
-        self.__code = code
-        self.__description = description
-        self.__treatment = treatment
+    def __init__(self, diagnosis):
+        self.__date = diagnosis['date']
+        self.__doctor = diagnosis['doctor']
+        self.__sickness = diagnosis['sickness']
+        self.__code = diagnosis['code']
+        self.__description = diagnosis['description']
+        self.__treatments = diagnosis['treatments']

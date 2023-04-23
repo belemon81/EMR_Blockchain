@@ -1,5 +1,5 @@
 class Hospital:
-    def __init__(self, name, address, phone_number):
-        self.name = name
-        self.address = address
-        self.phone_number = phone_number
+    def __init__(self, hospital):
+        self.name = hospital['name']
+        self.address = hospital['address']
+        self.phone_number = hospital['phone_number']

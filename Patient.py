@@ -11,8 +11,8 @@ class Patient:
         self.__phone_number = patient['phone_number']
         self.__emergency_contact_name = patient['emergency_contact_name']
         self.__emergency_contact_number = patient['emergency_contact_number']
-        self.__medical_history = []
-        self.__test_results = []
+        self.__medical_history = patient['medical_history']
+        self.__test_results = patient['test_results']
 
     def get_first_name(self):
         return self.__first_name

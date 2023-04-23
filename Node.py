@@ -27,7 +27,7 @@ class Node:
         }
         data_string = json.dumps(data, sort_keys=True)
         data_hash = hashlib.sha256(data_string.encode())
-        digital_signature = rsa.encrypt(data_hash.digest(), self.privkey)
+        digital_signature = rsa.encrypt(data_hash.digest(), self.private_key)
         return {
             "type": "Medical Record",
             "age": 5,
@@ -39,7 +39,7 @@ class Node:
 
     def receive_medical_record(self):
         medical_record = request.get_json()
-        if (medical_record['type'] == 'Medical Record' and self.verify_transaction(medical_record)):
+        if (medical_record['type'] == 'Medical Record' and self.verify_medical_record(medical_record)):
             self.add_to_mempool(medical_record)
             self.forward_medical_record(medical_record)
         return Response('Medical record received & forwarded.', mimetype='text/plain')
@@ -50,7 +50,7 @@ class Node:
         hash1 = base64.b64encode(rsa.decrypt(
             bin_signature, public_key)).decode()
         medical_record_string = json.dumps(
-            medical_record["medical_record"], sort_keys=True)
+            medical_record["data"], sort_keys=True)
         hash2 = base64.b64encode(hashlib.sha256(
             medical_record_string.encode()).digest()).decode()
         return hash1 == hash2
@@ -87,19 +87,20 @@ class Node:
                         )
                     )
                     thread.start()
-                    print('Sending medical_record to peer ' + str(peer))
+                    print('Sending medical record to peer ' + str(peer))
                 else:
                     print('Ignored the original peer ' + str(peer))
 
     def send_medical_record(self):
-        receiver = request.form['receiver']
-        raw_medical_record = request.form['medical_record']
-        fee = request.form['fee']
+        json_data = request.get_json()
+        receiver = json_data['receiver']
+        raw_medical_record = json_data['medical_record']
+        fee = json_data['fee']
         medical_record = self.create_medical_record(
             receiver, raw_medical_record, fee)
-        if (medical_record['type'] == 'Medical Record' and self.verify_transaction(medical_record)):
+        if (medical_record['type'] == 'Medical Record' and self.verify_medical_record(medical_record)):
             self.add_to_mempool(medical_record)
-            self.forward(medical_record)
+            self.forward_medical_record(medical_record)
         return Response(
             'Medical record has been broadcasted to peers.',
             mimetype='text/plain'
