@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 node = Node({
     "port": 8005,
-    "public_key": (1931, 16353719),
-    "private_key": (13306691, 16353719),
+    "public_key": (1189, 14665691),
+    "private_key": (9159709, 14665691),
     "peers": [8001, 8003, 8004]
 })
 
