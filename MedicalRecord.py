@@ -4,7 +4,6 @@ class MedicalRecord:
         self.__hospital = medical_record['hospital']
         self.__date = medical_record['date']
         self.__diagnosis = medical_record['diagnosis']
-        self.__prescription = medical_record['prescription']
 
         def get_patient(self):
             return self.__patient
@@ -18,9 +17,6 @@ class MedicalRecord:
         def get_diagnosis(self):
             return self.__address
 
-        def get_prescription(self):
-            return self.__prescription
-
         def set_patient(self, patient):
             self.__patient = patient
 
@@ -32,6 +28,3 @@ class MedicalRecord:
 
         def set_diagnosis(self, diagnosis):
             self.__diagnosis = diagnosis
-
-        def set_prescription(self, prescription):
-            self.__prescription = prescription
