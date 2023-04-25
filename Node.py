@@ -31,6 +31,7 @@ class Node:
         return {
             "type": "Medical Record",
             "age": 5,
+            "tracking": [],
             "forwarder": self.id,
             "data": data,
             "public_key": self.public_key,
@@ -42,7 +43,7 @@ class Node:
         if (medical_record['type'] == 'Medical Record' and self.verify_medical_record(medical_record)):
             self.add_to_mempool(medical_record)
             self.forward_medical_record(medical_record)
-        return Response('Medical record received & forwarded.', mimetype='text/plain')
+        return Response("Success", mimetype='text/plain')
 
     def verify_medical_record(self, medical_record):
         bin_signature = base64.b64decode(medical_record["digital_signature"])
@@ -77,7 +78,13 @@ class Node:
         else:
             medical_record['age'] -= 1
             for peer in self.peers:
-                if peer != original_forwarder:
+                here = False
+                for node in medical_record['tracking']:
+                    if node == peer:
+                        here = True
+                        break
+                if peer != original_forwarder and here == False:
+                    medical_record['tracking'].append(peer)
                     thread = threading.Thread(
                         target=post_thread,
                         args=(
@@ -89,13 +96,14 @@ class Node:
                     thread.start()
                     print('Sending medical record to peer ' + str(peer))
                 else:
-                    print('Ignored the original peer ' + str(peer))
+                    print('Ignored the peer ' + str(peer))
 
     def send_medical_record(self):
         json_data = request.get_json()
         receiver = json_data['receiver']
         raw_medical_record = json_data['medical_record']
         fee = json_data['fee']
+        print(raw_medical_record)
         medical_record = self.create_medical_record(
             receiver, raw_medical_record, fee)
         if (medical_record['type'] == 'Medical Record' and self.verify_medical_record(medical_record)):
