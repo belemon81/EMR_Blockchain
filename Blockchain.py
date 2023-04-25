@@ -6,7 +6,7 @@ import json
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.pending_transactions = []
+        self.pending_medical_records = []
         self.new_block(previous_hash="0")
 
     def is_chain_valid(self):
@@ -27,7 +27,7 @@ class Blockchain:
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'transactions': self.pending_transactions,
+            'pending_medical_records': self.pending_medical_records,
             'proof': 0,
             'previous_hash': previous_hash or self.hash(self.last_block),
         }

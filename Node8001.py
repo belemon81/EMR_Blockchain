@@ -1,6 +1,7 @@
 from Node import Node
 from flask import Flask
 from flask import jsonify
+
 app = Flask(__name__)
 
 node = Node({
@@ -16,7 +17,7 @@ def receive_medical_record():
     return node.receive_medical_record()
 
 
-@app.route("/recent_medical_records", methods=['GET'])
+@app.route("/recent_medical_record", methods=['GET'])
 def get_recent_medical_record():
     return jsonify(node.mempool[0])
 
