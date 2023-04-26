@@ -19,6 +19,7 @@ class Node:
         self.peers = config['peers']
         self.blockchain = Blockchain()
         self.mempool = []
+        self.new_block_triggered = False
 
     def send_medical_record(self):
         json = request.get_json()
@@ -125,6 +126,7 @@ class Node:
                     return Response('Invalid block!', mimetype='text/plain')
             self.blockchain.chain.append(json['block'])
             json['tracking'].append(self.id)
+            self.new_block_triggered = True
             self.forward_block()
             for medical_record in self.mempool:
                 for verified_medical_record in json['block']['medical_records']:
@@ -132,7 +134,7 @@ class Node:
                         self.mempool.remove(medical_record)
             return Response('Success!', mimetype='text/plain')
         else:
-            return Response('Invalid block!', mimetype='text/plain')
+            print('Received an invalid block! Block discarded!')
 
     def forward_block(self, block_msg):
         original_forwarder = block_msg['forwarder']

@@ -1,4 +1,3 @@
-import time
 import json
 import hashlib
 
@@ -8,15 +7,20 @@ class Blockchain:
         self.chain = []
         self.create_genesis_block()
 
+    @property
+    def last_block(self):
+        return self.chain[-1]
+
     def create_genesis_block(self):
-        self.chain.append({
+        genesis_block = {
             'index': 0,
-            'miner': '',
-            'timestamp': int(time.time()),
+            'miner': 'Using blockchain for EMRs',
+            'timestamp': 1682499600,
             'nonce': 0,
             'medical_records': [],
             'previous_hash': '0',
-        })
+        }
+        self.chain.append(genesis_block)
 
     def is_chain_valid(self):
         block = self.last_block
@@ -35,7 +39,7 @@ class Blockchain:
     def is_block_valid(self, block):
         if block['index'] != self.last_block['index'] + 1:
             return False
-        if block['previous_hash'] != self.hash(self.last_block()):
+        if block['previous_hash'] != self.hash(self.last_block):
             return False
         if not self.satisfy_target(self.hash(block)):
             return False
@@ -52,6 +56,3 @@ class Blockchain:
         if (myHash[:4] == '0000'):
             return True
         return False
-
-    def last_block(self):
-        return self.chain[-1]

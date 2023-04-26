@@ -2,14 +2,11 @@ from flask import Response
 from Node import Node
 import sys
 import time
-import json
-import hashlib
 
 
 class Miner(Node):
     def __init__(self, config):
         super().__init__(config)
-        self.new_block(previous_hash="0")
 
     def add_to_mempool(self, medical_record):
         exists = False
@@ -35,43 +32,41 @@ class Miner(Node):
             current_hash = self.blockchain.hash(block)
             if (current_hash[0:4] == '0000'):
                 success = True
+                break
             else:
                 block['nonce'] += 1
-        self.blockchain.chain.append(block)
-        self.mempool = []
-        self.send_block({
-            'type': 'Block',
-            'forwarder': self.id,
-            'age': 5,
-            'block': block,
-            'tracking': [],
-        })
+            if self.new_block_triggered:
+                self.new_block_triggered = False
+                break
+        if success:
+            self.blockchain.chain.append(block)
+            self.mempool = []
+            self.send_block({
+                'type': 'Block',
+                'forwarder': self.id,
+                'age': 5,
+                'block': block,
+                'tracking': [],
+            })
 
     def send_block(self, block_msg):
         if (block_msg['type'] == 'Block'):
             self.forward_block(block_msg)
-            return Response(
-                'Block has been broadcasted to peers.',
-                mimetype='text/plain'
-            )
+            return Response('Block has been broadcasted to peers.', mimetype='text/plain')
         else:
-            return Response(
-                'Block cannot broadcasted to peers.',
-                mimetype='text/plain'
-            )
+            return Response('Block cannot broadcasted to peers.', mimetype='text/plain')
 
-    def new_block(self, previous_hash=None):
+    def new_block(self):
+        if self.blockchain.last_block['index'] == 0:
+            previous_hash = '00004d50fc1bbf5d6e08d411ba661e6330b00a7d0f221797b6a399f66d4661b9'
+        else:
+            previous_hash = self.blockchain.hash(self.blockchain.last_block)
         block = {
-            'index': len(self.blockchain.chain) + 1,
+            'index': len(self.blockchain.chain),
             'miner': self.id,
             'timestamp': int(time.time()),
             'nonce': 0,
             'medical_records': self.mempool,
-            'previous_hash': previous_hash or self.blockchain.hash((self.blockchain.last_block())),
+            'previous_hash': previous_hash
         }
         return block
-        block_string = json.dumps(block, sort_keys=True)
-        encoded_string = block_string.encode()
-        raw_hash = hashlib.sha256(encoded_string)
-        hex_hash = raw_hash.hexdigest()
-        return hex_hash

@@ -1,10 +1,10 @@
-from Node import Node
+from Miner import Miner
 from flask import Flask
 from flask import jsonify
 
 app = Flask(__name__)
 
-node = Node({
+node = Miner({
     "port": 8001,
     "public_key": [1571, 13578793],
     "private_key": [13518731, 13578793],
