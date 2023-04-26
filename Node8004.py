@@ -29,7 +29,7 @@ def receive_block():
 
 @app.route("/recent_medical_record", methods=['GET'])
 def get_recent_medical_record():
-    if node.mempool.len != 0:
+    if len(node.mempool) != 0:
         return jsonify(node.mempool[-1])
     else:
         return jsonify({})

@@ -1,11 +1,15 @@
 from flask import Response
 from Node import Node
 import sys
+import time
+import json
+import hashlib
 
 
 class Miner(Node):
     def __init__(self, config):
         super().__init__(config)
+        self.new_block(previous_hash="0")
 
     def add_to_mempool(self, medical_record):
         exists = False
@@ -28,7 +32,7 @@ class Miner(Node):
     def mine(self, block):
         success = False
         while not success:
-            current_hash = self.hash(block)
+            current_hash = self.blockchain.hash(block)
             if (current_hash[0:4] == '0000'):
                 success = True
             else:
@@ -38,7 +42,7 @@ class Miner(Node):
         self.send_block({
             'type': 'Block',
             'forwarder': self.id,
-            'age': 3,
+            'age': 5,
             'block': block,
             'tracking': [],
         })
@@ -55,3 +59,19 @@ class Miner(Node):
                 'Block cannot broadcasted to peers.',
                 mimetype='text/plain'
             )
+
+    def new_block(self, previous_hash=None):
+        block = {
+            'index': len(self.blockchain.chain) + 1,
+            'miner': self.id,
+            'timestamp': int(time.time()),
+            'nonce': 0,
+            'medical_records': self.mempool,
+            'previous_hash': previous_hash or self.blockchain.hash((self.blockchain.last_block())),
+        }
+        return block
+        block_string = json.dumps(block, sort_keys=True)
+        encoded_string = block_string.encode()
+        raw_hash = hashlib.sha256(encoded_string)
+        hex_hash = raw_hash.hexdigest()
+        return hex_hash

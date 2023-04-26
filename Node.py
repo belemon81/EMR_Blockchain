@@ -19,7 +19,6 @@ class Node:
         self.peers = config['peers']
         self.blockchain = Blockchain()
         self.mempool = []
-        self.new_block(previous_hash="0")
 
     def send_medical_record(self):
         json = request.get_json()
@@ -79,7 +78,7 @@ class Node:
     def add_to_mempool(self, medical_record):
         exists = False
         for available_medical_record in self.mempool:
-            if (medical_record['digital_signature'] == available_medical_record['digital_signature']):
+            if (medical_record['data'] == available_medical_record['data']):
                 exists = True
                 break
         if not exists:
@@ -163,24 +162,6 @@ class Node:
                     print('Sending block to peer ' + str(peer) + '!')
                 else:
                     print('Ignored the peer ' + str(peer) + '!')
-
-    def new_block(self, previous_hash=None):
-        block = {
-            'index': len(self.blockchain.chain) + 1,
-            'miner': self.id,
-            'timestamp': int(time.time()),
-            'nonce': 0,
-            'medical_records': self.mempool,
-            'previous_hash': previous_hash or self.hash(self.blockchain.last_block()),
-        }
-        return block
-
-    def hash(self, block):
-        block_string = json.dumps(block, sort_keys=True)
-        encoded_string = block_string.encode()
-        raw_hash = hashlib.sha256(encoded_string)
-        hex_hash = raw_hash.hexdigest()
-        return hex_hash
 
 
 def post_thread(url, data):
