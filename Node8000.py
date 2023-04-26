@@ -1,10 +1,10 @@
-from Node import Node
+from Miner import Miner
 from flask import Flask
 from flask import jsonify
 
 app = Flask(__name__)
 
-node = Node({
+node = Miner({
     "port": 8000,
     "public_key": [1267, 30155681],
     "private_key": [12966523, 30155681],
@@ -40,9 +40,9 @@ def get_pending_medical_records():
     return jsonify(node.mempool)
 
 
-@app.route("/verified-medical_records", methods=['GET'])
+@app.route("/verified_medical_records", methods=['GET'])
 def get_verified_medical_records():
-    return jsonify(node.blockchain)
+    return jsonify(node.blockchain.chain)
 
 
 app.run(port=node.id)

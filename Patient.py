@@ -3,6 +3,7 @@ class Patient:
         self.__first_name = patient['first_name']
         self.__middle_name = patient['middle_name']
         self.__last_name = patient['last_name']
+        self.__age = patient['age']
         self.__gender = patient['gender']
         self.__address = patient['address']
         self.__city = patient['city']
@@ -13,6 +14,43 @@ class Patient:
         self.__emergency_contact_number = patient['emergency_contact_number']
         self.__medical_history = patient['medical_history']
         self.__test_results = patient['test_results']
+
+    def __eq__(self, other):
+        if isinstance(other, Patient):
+            if self.__first_name == other.__first_name:
+                if self.__middle_name == other.__middle_name:
+                    if self.__last_name == other.__last_name:
+                        if self.__age == other.__age:
+                            if self.__gender == other.__gender:
+                                if self.__address == other.__address:
+                                    if self.__city == other.__city:
+                                        if self.__state == other.__state:
+                                            if self.__zip_code == other.__zip_code:
+                                                if self.__phone_number == other.__phone_number:
+                                                    if self.__emergency_contact_name == other.__emergency_contact_name:
+                                                        if self.__emergency_contact_number == other.__emergency_contact_number:
+                                                            if self.___medical_history == other.__medical_history:
+                                                                if self.__test_results == other.__test_results:
+                                                                    return True
+        return False
+
+    def to_dict(self):
+        return {
+            "first_name": self.__first_name,
+            "middle_name": self.__middle_name,
+            "last_name": self.__last_name,
+            "age": self.__age,
+            "gender": self.__gender,
+            "address": self.__address,
+            "city": self.__city,
+            "state": self.__state,
+            "zip_code": self.__zip_code,
+            "phone_number": self.__phone_number,
+            "emergency_contact_name": self.__emergency_contact_name,
+            "emergency_contact_number": self.__emergency_contact_number,
+            "medical_history": self.__medical_history,
+            "test_results": self.__test_results
+        }
 
 
 # =============================================================================

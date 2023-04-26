@@ -1,13 +1,11 @@
 from flask import Response
 from Node import Node
-import time
 import sys
 
 
 class Miner(Node):
     def __init__(self, config):
         super().__init__(config)
-        self.new_block(previous_hash='0')
 
     def add_to_mempool(self, medical_record):
         exists = False
@@ -21,7 +19,7 @@ class Miner(Node):
                 'public_key': medical_record['public_key'],
                 'digital_signature': medical_record['digital_signature']
             }
-            if ((sys.getsizeof(self.mempool) + sys.getsizeof(data)) <= 500):
+            if (sys.getsizeof(self.mempool) + sys.getsizeof(data)) <= 500 and len(self.mempool) <= 10:
                 self.mempool.append(data)
             else:
                 self.mine(self.new_block())
@@ -35,7 +33,7 @@ class Miner(Node):
                 success = True
             else:
                 block['nonce'] += 1
-        self.blockchain.append(block)
+        self.blockchain.chain.append(block)
         self.mempool = []
         self.send_block({
             'type': 'Block',
@@ -44,17 +42,6 @@ class Miner(Node):
             'block': block,
             'tracking': [],
         })
-
-    def new_block(self, previous_hash=None):
-        block = {
-            'index': len(self.blockchain) + 1,
-            'miner': self.id,
-            'timestamp': time(),
-            'nonce': 0,
-            'medical_records': self.mempool,
-            'previous_hash': previous_hash or self.hash(self.last_block),
-        }
-        return block
 
     def send_block(self, block_msg):
         if (block_msg['type'] == 'Block'):
@@ -65,6 +52,6 @@ class Miner(Node):
             )
         else:
             return Response(
-                'Invalid block!',
+                'Block cannot broadcasted to peers.',
                 mimetype='text/plain'
             )

@@ -29,7 +29,10 @@ def receive_block():
 
 @app.route("/recent_medical_record", methods=['GET'])
 def get_recent_medical_record():
-    return jsonify(node.mempool[-1])
+    if node.mempool.len != 0:
+        return jsonify(node.mempool[-1])
+    else:
+        return jsonify({})
 
 
 @app.route("/pending_medical_records", methods=['GET'])
@@ -37,9 +40,9 @@ def get_pending_medical_records():
     return jsonify(node.mempool)
 
 
-@app.route("/verified-medical_records", methods=['GET'])
+@app.route("/verified_medical_records", methods=['GET'])
 def get_verified_medical_records():
-    return jsonify(node.blockchain)
+    return jsonify(node.blockchain.chain)
 
 
 app.run(port=node.id)

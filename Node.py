@@ -6,6 +6,8 @@ import base64
 import requests
 from flask import Response
 from flask import request
+from MedicalRecord import MedicalRecord
+from Blockchain import Blockchain
 import time
 
 
@@ -15,8 +17,9 @@ class Node:
         self.public_key = config['public_key']
         self.private_key = config['private_key']
         self.peers = config['peers']
-        self.blockchain = []
+        self.blockchain = Blockchain()
         self.mempool = []
+        self.new_block(previous_hash="0")
 
     def send_medical_record(self):
         json = request.get_json()
@@ -31,11 +34,12 @@ class Node:
         return Response('Medical record has been broadcasted to peers.', mimetype='text/plain')
 
     def create_medical_record(self, receiver, raw_medical_record, fee):
+        medical_record_object = MedicalRecord(raw_medical_record)
         data = {
             'time': int(time.time()),
             'sender': self.id,
             'receiver': receiver,
-            'medical_record': raw_medical_record,
+            'medical_record': medical_record_object.to_dict(),
             'fee': fee
         }
         data_string = json.dumps(data, sort_keys=True)
@@ -114,17 +118,13 @@ class Node:
                 else:
                     print('Ignored the peer ' + str(peer) + '.')
 
-    @property
-    def last_block(self):
-        return self.blockchain[-1]
-
     def receive_block(self):
         json = request.get_json()
-        if (json['type'] == 'Block' and self.is_chain_valid() and self.is_block_valid(json['block'])):
+        if (json['type'] == 'Block' and self.blockchain.is_chain_valid() and self.blockchain.is_block_valid(json['block'])):
             for block_medical_record in json['block']['medical_records']:
                 if not self.verify_medical_record(block_medical_record):
                     return Response('Invalid block!', mimetype='text/plain')
-            self.blockchain.append(json['block'])
+            self.blockchain.chain.append(json['block'])
             json['tracking'].append(self.id)
             self.forward_block()
             for medical_record in self.mempool:
@@ -164,33 +164,16 @@ class Node:
                 else:
                     print('Ignored the peer ' + str(peer) + '!')
 
-    def is_chain_valid(self):
-        block = self.last_block
-        if (self.satisfy_target(hash(block)) == False):
-            return False
-        while (block['index'] >= 2):
-            prev_block = self.blockchain[block['index']-1]
-            prev_hash = hash(prev_block)
-            if (self.satisfy_target(prev_hash) == False):
-                return False
-            if (prev_hash != block['previous_hash']):
-                return False
-            block = prev_block
-        return True 
-
-    def is_block_valid(self, block):
-        if block['index'] != self.last_block['index'] + 1:
-            return False
-        if block['previous_hash'] != hash(self.last_block()):
-            return False
-        if not self.satisfy_target(hash(block)):
-            return False
-        return True
-
-    def satisfy_target(self, myHash):
-        if (myHash[:4] == '0000'):
-            return True
-        return False
+    def new_block(self, previous_hash=None):
+        block = {
+            'index': len(self.blockchain.chain) + 1,
+            'miner': self.id,
+            'timestamp': int(time.time()),
+            'nonce': 0,
+            'medical_records': self.mempool,
+            'previous_hash': previous_hash or self.hash(self.blockchain.last_block()),
+        }
+        return block
 
     def hash(self, block):
         block_string = json.dumps(block, sort_keys=True)
