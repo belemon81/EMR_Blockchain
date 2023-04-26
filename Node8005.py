@@ -12,24 +12,34 @@ node = Node({
 })
 
 
-@app.route("/medical_record", methods=['POST'])
+@app.route("/send_medical_record", methods=['POST'])
+def send_medical_record():
+    return node.send_medical_record()
+
+
+@app.route("/receive_medical_record", methods=['POST'])
 def receive_medical_record():
     return node.receive_medical_record()
 
 
+@app.route("/receive_block", methods=['POST'])
+def receive_block():
+    return node.receive_block()
+
+
 @app.route("/recent_medical_record", methods=['GET'])
 def get_recent_medical_record():
-    return jsonify(node.mempool[0])
+    return jsonify(node.mempool[-1])
 
 
-@app.route("/medical_records", methods=['GET'])
-def get_medical_records():
+@app.route("/pending_medical_records", methods=['GET'])
+def get_pending_medical_records():
     return jsonify(node.mempool)
 
 
-@app.route("/deliver_medical_record", methods=['POST'])
-def send_medical_record():
-    return node.send_medical_record()
+@app.route("/verified_medical_records", methods=['GET'])
+def get_verified_medical_records():
+    return jsonify(node.blockchain)
 
 
 app.run(port=node.id)
